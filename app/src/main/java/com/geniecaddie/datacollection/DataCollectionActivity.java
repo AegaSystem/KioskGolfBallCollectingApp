@@ -339,9 +339,9 @@ public class DataCollectionActivity extends Activity implements SurfaceHolder.Ca
             }
         }
 
-        // 파일명: HHmmss_홀번호타입.jpg (간단한 형식)
-        SimpleDateFormat timeSdf = new SimpleDateFormat("HHmmss", Locale.getDefault());
-        String timestamp = timeSdf.format(new Date());
+        // 파일명: yyyyMMdd_HHmmss_홀번호타입.jpg (날짜 정보 포함)
+        SimpleDateFormat fullSdf = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
+        String timestamp = fullSdf.format(new Date());
 
         CameraInfo camera = connectionManager.getCurrentCamera();
         String holeInfo = camera != null ? convertCameraNameToHoleInfo(camera.getName()) : "unknown";
@@ -554,8 +554,8 @@ public class DataCollectionActivity extends Activity implements SurfaceHolder.Ca
                 }
             }
 
-            // 파일 저장
-            File statsFile = new File(todayDir, "daily_stats.txt");
+            // 파일 저장 (날짜 정보 포함)
+            File statsFile = new File(todayDir, "daily_stats_" + today + ".txt");
             try (FileWriter writer = new FileWriter(statsFile, false)) { // 덮어쓰기
                 writer.write(statsContent);
                 writer.flush();
