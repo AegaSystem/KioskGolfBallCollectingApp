@@ -513,24 +513,17 @@ public class DataCollectionActivity extends Activity implements SurfaceHolder.Ca
             return;
         }
 
-        // 홀별 통계 텍스트 생성
-        boolean hasData = false;
+        // 홀별 통계 텍스트 생성 (전체 홀 표시)
         for (int i = 1; i <= 9; i++) {
             String whiteKey = i + "W";
             String ladyKey = i + "L";
             int whiteCount = holeCounts.getOrDefault(whiteKey, 0);
             int ladyCount = holeCounts.getOrDefault(ladyKey, 0);
 
-            // 데이터가 있는 홀만 표시
-            if (whiteCount > 0 || ladyCount > 0) {
-                if (hasData) statsText.append("\n");
-                statsText.append(String.format("%dW:%d %dL:%d", i, whiteCount, i, ladyCount));
-                hasData = true;
+            statsText.append(String.format("%dW:%d %dL:%d", i, whiteCount, i, ladyCount));
+            if (i < 9) {
+                statsText.append("\n");
             }
-        }
-
-        if (!hasData) {
-            statsText.append("수집 데이터 없음");
         }
 
         dailyStatsTextView.setText(statsText.toString());
