@@ -303,27 +303,63 @@ public class DataCollectionActivity extends Activity implements SurfaceHolder.Ca
      * 파일 경로 생성
      */
     private String generateFilePath() {
-        // Download/GolfCameraData 폴더
+        // Download/GolfBallImages 폴더
         File downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        File captureDir = new File(downloadDir, "GolfCameraData");
+        File golfBallDir = new File(downloadDir, "GolfBallImages");
 
-        if (!captureDir.exists()) {
-            boolean created = captureDir.mkdirs();
+        // 오늘 날짜로 서브폴더 생성
+        String today = new SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(new Date());
+        File todayDir = new File(golfBallDir, today);
+
+        if (!todayDir.exists()) {
+            boolean created = todayDir.mkdirs();
             if (!created) {
-                Timber.tag(TAG).e("폴더 생성 실패: %s", captureDir.getAbsolutePath());
+                Timber.tag(TAG).e("날짜 폴더 생성 실패: %s", todayDir.getAbsolutePath());
             }
         }
 
-        // 파일명: yyyyMMdd_HHmmss_카메라이름.jpg
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
-        String timestamp = sdf.format(new Date());
+        // 파일명: HHmmss_홀번호타입.jpg (간단한 형식)
+        SimpleDateFormat timeSdf = new SimpleDateFormat("HHmmss", Locale.getDefault());
+        String timestamp = timeSdf.format(new Date());
 
         CameraInfo camera = connectionManager.getCurrentCamera();
-        String cameraName = camera != null ? camera.getName().replace(" ", "_") : "unknown";
+        String holeInfo = camera != null ? convertCameraNameToHoleInfo(camera.getName()) : "unknown";
 
-        String fileName = String.format("%s_%s.jpg", timestamp, cameraName);
+        String fileName = String.format("%s_%s.jpg", timestamp, holeInfo);
 
-        return new File(captureDir, fileName).getAbsolutePath();
+        return new File(todayDir, fileName).getAbsolutePath();
+    }
+
+    /**
+     * 카메라 이름을 간단한 홀 정보로 변환
+     * "Hole1_White" -> "1W"
+     * "Hole1_Lady" -> "1L"
+     */
+    private String convertCameraNameToHoleInfo(String cameraName) {
+        if (cameraName == null) return "unknown";
+
+        try {
+            // "Hole1_White" 형식에서 홀 번호와 타입 추출
+            if (cameraName.startsWith("Hole") && cameraName.contains("_")) {
+                String[] parts = cameraName.split("_");
+                if (parts.length >= 2) {
+                    String holePart = parts[0]; // "Hole1"
+                    String typePart = parts[1]; // "White" or "Lady"
+
+                    // 홀 번호 추출 (Hole1 -> 1)
+                    String holeNumber = holePart.substring(4);
+
+                    // 타입 변환 (White -> W, Lady -> L)
+                    String typeShort = typePart.equals("White") ? "W" : "L";
+
+                    return holeNumber + typeShort;
+                }
+            }
+        } catch (Exception e) {
+            Timber.tag(TAG).w("카메라 이름 변환 실패: %s", cameraName);
+        }
+
+        return "unknown";
     }
 
     /**
