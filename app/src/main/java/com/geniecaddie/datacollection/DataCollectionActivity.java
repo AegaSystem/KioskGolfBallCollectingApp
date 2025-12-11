@@ -13,6 +13,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -527,6 +529,42 @@ public class DataCollectionActivity extends Activity implements SurfaceHolder.Ca
         }
 
         dailyStatsTextView.setText(statsText.toString());
+
+        // 텍스트 파일로 동기화 저장
+        saveDailyStatsToFile(statsText.toString());
+    }
+
+    /**
+     * 일별 수집 통계를 텍스트 파일로 저장
+     */
+    private void saveDailyStatsToFile(String statsContent) {
+        try {
+            // 저장 경로: GolfBallImages/YYYYMMDD/daily_stats.txt
+            File golfBallDir = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOWNLOADS), "GolfBallImages");
+
+            String today = new SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(new Date());
+            File todayDir = new File(golfBallDir, today);
+
+            // 폴더가 없으면 생성
+            if (!todayDir.exists()) {
+                if (!todayDir.mkdirs()) {
+                    Timber.tag(TAG).e("통계 파일 저장 폴더 생성 실패: %s", todayDir.getAbsolutePath());
+                    return;
+                }
+            }
+
+            // 파일 저장
+            File statsFile = new File(todayDir, "daily_stats.txt");
+            try (FileWriter writer = new FileWriter(statsFile, false)) { // 덮어쓰기
+                writer.write(statsContent);
+                writer.flush();
+                Timber.tag(TAG).d("일별 통계 파일 저장 완료: %s", statsFile.getAbsolutePath());
+            }
+
+        } catch (IOException e) {
+            Timber.tag(TAG).e("일별 통계 파일 저장 실패: %s", e.getMessage());
+        }
     }
 
     /**
