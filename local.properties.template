@@ -1,0 +1,27 @@
+# ==============================================================================
+# local.properties - Template
+# ==============================================================================
+# This file contains local configuration specific to your development environment.
+# DO NOT commit this file to version control.
+#
+# SETUP INSTRUCTIONS:
+# 1. Update sdk.dir to your Android SDK location
+# 2. Update ndk.dir to your Android NDK location
+# 3. Save the file
+#
+# HOW TO FIND YOUR PATHS:
+# - Android Studio > Preferences > System Settings > Android SDK
+# - Copy the "Android SDK Location" path
+# - NDK is typically located under: {SDK}/ndk/{version}
+#
+# EXAMPLE PATHS:
+# macOS:    /Users/USERNAME/Library/Android/sdk
+# Windows:  C:\Users\USERNAME\AppData\Local\Android\Sdk
+# Linux:    /home/USERNAME/Android/Sdk
+# ==============================================================================
+
+# Android SDK location (Required)
+sdk.dir=YOUR_SDK_PATH_HERE
+
+# Android NDK location (Required)
+ndk.dir=YOUR_NDK_PATH_HERE

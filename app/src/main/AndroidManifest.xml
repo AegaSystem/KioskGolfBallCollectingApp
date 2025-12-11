@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:tools="http://schemas.android.com/tools"
+      android:versionCode="1"
+      android:versionName="1.0" package="com.geniecaddie.KioskGolfBallCollectingApp">
+    <uses-feature android:glEsVersion="0x00020000" />
+        <uses-sdk
+            tools:overrideLibrary="com.company.PlaySDK, com.company.NetSDK" />
+	<!-- Android 13+ 미디어 권한 -->
+	<uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+	<uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
+	<!-- 레거시 저장소 권한 (Android 12 이하) -->
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+		android:maxSdkVersion="28"/>
+	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+		android:maxSdkVersion="28"/>
+	<uses-permission android:name="android.permission.RECORD_AUDIO"/>
+	<!-- 네트워크 권한 (IP 카메라 연결) -->
+	<uses-permission android:name="android.permission.INTERNET"/>
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+	<!-- Logcat 읽기 권한 (크래시 로그 캡처용, Android 4.1+ 에서는 자신의 앱만 가능) -->
+<!--	<uses-permission android:name="android.permission.READ_LOGS" -->
+<!--	    tools:ignore="ProtectedPermissions"/>-->
+
+    <application
+        android:name="com.geniecaddie.DemoApplication"
+        android:icon="@drawable/icon"
+        android:label="@string/app_name">
+        <!-- DataCollectionActivity (메인 액티비티 - 카메라 데이터 수집용) -->
+        <activity android:name="com.geniecaddie.datacollection.DataCollectionActivity"
+                  android:label="@string/activity_data_collection"
+                  android:screenOrientation="landscape"
+                  android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+                  android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

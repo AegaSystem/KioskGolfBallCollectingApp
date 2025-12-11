@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, PlayDemoActivity!</string>
+    <string name="app_name">Kiosk Golf Ball Collector</string>
+    
+    <!-- demo activity -->
+	<string name="demo_activity_file">Select file</string>
+	<string name="demo_activity_mode_file">File</string>
+	<string name="demo_activity_mode_stream">Stream</string>
+	<string name="demo_activity_play">Play</string>
+	<string name="demo_activity_pause">Pause</string>
+	<string name="demo_activity_stop">Stop</string>
+	<string name="demo_activity_volume">Volume</string>
+	<string name="demo_activity_fast">Fast</string>
+	<string name="demo_activity_slow">Slow</string>
+	<string name="demo_activity_normal">Normal</string>
+	<string name="demo_activity_quality">Quality</string>
+	<string name="demo_activity_capture">Audio Capture</string>
+	<string name="demo_activity_aec_sw">SW AEC</string>
+	<string name="demo_activity_aec_hw">HW AEC</string>
+	<string name="demo_activity_stopcapture">Stop Audio Capture</string>
+	<string name="demo_activity_snappitcure">SnapPict</string>
+	<string name="demo_activity_decode_sw">SW</string>
+	<string name="demo_activity_decode_hw">HW</string>
+	<string name="demo_activity_decode_hwFast">HWFAST</string>
+	<string name="demo_activity_decode_hwTexture">HWTEX</string>
+	<string name="demo_activity_filepath">File Path</string>
+		<!-- quality -->
+		<string name="quality_activity_bright">Brightness</string>
+		<string name="quality_activity_contrast">Contrast</string>
+		<string name="quality_activity_saturation">Saturation</string>
+		<string name="quality_activity_huen">Huen</string>
+	
+	<!-- Golf Ball Collection Activity -->
+	<string name="btn_collect_balls">골프공 수집 시작</string>
+	<string name="btn_stop_collection">수집 중지</string>
+	<string name="toast_collection_started">골프공 수집을 시작합니다</string>
+	<string name="toast_collection_stopped">골프공 수집을 중지합니다</string>
+	<string name="toast_ball_detected">골프공 감지: %d개</string>
+	<string name="status_ready">준비됨</string>
+	<string name="status_collecting">수집 중...</string>
+
+	<!-- Data Collection Activity -->
+	<string name="activity_data_collection">골프 카메라 데이터 수집</string>
+	<string name="btn_snapshot">스냅샷</string>
+	<string name="btn_play_white">PlayId(WHITE)</string>
+	<string name="btn_play_color">PlayId(COLOR)</string>
+	<string name="toast_connection_success">연결 성공: %s</string>
+	<string name="toast_connection_failed">연결 실패</string>
+	<string name="toast_snapshot_success">스냅샷 완료: %s</string>
+	<string name="toast_snapshot_failed">스냅샷 실패</string>
+	<string name="toast_surface_not_ready">Surface가 준비되지 않았습니다</string>
+	<string name="status_connecting">연결 중...</string>
+	<string name="status_connected">연결됨</string>
+	<string name="status_select_camera">카메라를 선택하세요</string>
+</resources>

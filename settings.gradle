@@ -1,0 +1,174 @@
+// ============================================
+// Gradle JVM 버전 권장 사항 (정보 제공)
+// ============================================
+// 참고: Gradle 8.5+는 Java 21을 지원하므로, Gradle 데몬은 Java 21에서 실행 가능합니다.
+// 하지만 빌드 시 컴파일러는 java.toolchain 설정으로 Java 17을 사용합니다.
+// 
+// 권장: Gradle 데몬도 Java 17을 사용하는 것이 더 안정적이지만,
+//       Java 21을 사용해도 빌드는 정상적으로 작동합니다.
+
+//def recommendedJavaVersion = '17'
+//def currentJavaVersion = JavaVersion.current().majorVersion
+//
+//if (currentJavaVersion != recommendedJavaVersion) {
+//    println ""
+//    println "============================================================"
+//    println "ℹ️  Gradle JVM 버전 정보 (Java ${currentJavaVersion} 감지)"
+//    println "============================================================"
+//    println "현재 Gradle 데몬이 Java ${currentJavaVersion}에서 실행 중입니다."
+//    println "권장 버전: Java ${recommendedJavaVersion}"
+//    println ""
+//    println "참고:"
+//    println "  - Gradle 8.5+는 Java 21을 지원합니다."
+//    println "  - 빌드 시 컴파일러는 java.toolchain 설정으로 Java 17을 사용합니다."
+//    println "  - Java 21을 사용해도 빌드는 정상적으로 작동합니다."
+//    println ""
+//    println "더 안정적인 빌드를 원하시면:"
+//    println "  Android Studio > Settings > Build Tools > Gradle > Gradle JDK"
+//    println "  를 Java ${recommendedJavaVersion}로 변경하세요."
+//    println "============================================================"
+//    println ""
+//}
+
+// ============================================
+// Gradle 설정 파일 검증 (변경 방지)
+// ============================================
+def validateGradleWrapperProperties() {
+    def wrapperPropsFile = new File(rootDir, "gradle/wrapper/gradle-wrapper.properties")
+    if (!wrapperPropsFile.exists()) {
+        throw new GradleException("gradle-wrapper.properties 파일이 없습니다!")
+    }
+    
+    def props = new Properties()
+    wrapperPropsFile.withInputStream { props.load(it) }
+    
+    // Gradle 버전 검증
+    def expectedGradleVersion = "8.5"
+    def actualDistributionUrl = props.getProperty("distributionUrl", "")
+    
+    if (!actualDistributionUrl.contains("gradle-${expectedGradleVersion}")) {
+        throw new GradleException("""
+============================================================
+🚨 gradle-wrapper.properties 변경 감지 🚨
+============================================================
+gradle-wrapper.properties의 Gradle 버전이 예상과 다릅니다.
+
+예상 버전: ${expectedGradleVersion}
+현재 설정: ${actualDistributionUrl}
+
+팀원 간 빌드 일관성을 위해 Gradle 버전을 변경하지 마세요.
+원래 버전으로 되돌려주세요.
+============================================================
+        """)
+    }
+}
+
+def validateGradleProperties() {
+    def gradlePropsFile = new File(rootDir, "gradle.properties")
+    if (!gradlePropsFile.exists()) {
+        throw new GradleException("gradle.properties 파일이 없습니다!")
+    }
+    
+    def props = new Properties()
+    gradlePropsFile.withInputStream { props.load(it) }
+    
+    // 필수 설정 검증
+    def requiredSettings = [
+        "org.gradle.jvmargs": "-Xmx4g",
+        "android.useAndroidX": "true",
+        "android.enableJetifier": "true"
+    ]
+    
+    def missingOrChanged = []
+    requiredSettings.each { key, expectedValue ->
+        def actualValue = props.getProperty(key, "").trim()
+        if (actualValue != expectedValue) {
+            missingOrChanged.add("  - ${key}: 예상='${expectedValue}', 실제='${actualValue}'")
+        }
+    }
+    
+    if (missingOrChanged.size() > 0) {
+        throw new GradleException("""
+============================================================
+🚨 gradle.properties 변경 감지 🚨
+============================================================
+gradle.properties의 필수 설정이 변경되었습니다:
+
+${missingOrChanged.join("\n")}
+
+팀원 간 빌드 일관성을 위해 이 설정들을 변경하지 마세요.
+원래 값으로 되돌려주세요.
+============================================================
+        """)
+    }
+    
+    // 금지된 설정 검증 (로컬 경로 등)
+    def forbiddenKeys = ["org.gradle.java.home"]
+    forbiddenKeys.each { key ->
+        if (props.containsKey(key)) {
+            throw new GradleException("""
+============================================================
+🚨 gradle.properties에 금지된 설정 발견 🚨
+============================================================
+gradle.properties에 '${key}' 설정이 있습니다.
+
+이 설정은 로컬 경로를 포함하므로 팀원 간 공유할 수 없습니다.
+해당 라인을 제거해주세요.
+============================================================
+            """)
+        }
+    }
+}
+
+// 검증 실행
+validateGradleWrapperProperties()
+validateGradleProperties()
+
+// ============================================
+// local.properties 자동 생성 로직
+// ============================================
+
+def localPropertiesFile = new File(rootDir, "local.properties")
+def localPropertiesTemplate = new File(rootDir, "local.properties.template")
+
+if (!localPropertiesFile.exists()) {
+    if (localPropertiesTemplate.exists()) {
+        println ""
+        println "=========================================="
+        println "⚠️  local.properties 파일이 없습니다."
+        println "📋 템플릿에서 자동으로 복사합니다..."
+        println "=========================================="
+        
+        // 템플릿 복사
+        localPropertiesTemplate.withInputStream { input ->
+            localPropertiesFile.withOutputStream { output ->
+                output << input
+            }
+        }
+        
+        println "✅ local.properties 생성 완료!"
+        println ""
+        println "⚠️  중요: 다음 작업을 수행하세요:"
+        println "   1. local.properties 파일을 여세요"
+        println "   2. sdk.dir을 본인의 Android SDK 경로로 수정하세요"
+        println ""
+        println "📍 SDK 경로 찾기:"
+        println "   - macOS: ~/Library/Android/sdk"
+        println "   - Windows: C:\\Users\\본인아이디\\AppData\\Local\\Android\\Sdk"
+        println ""
+        println "빌드를 계속하려면 경로를 수정한 후 다시 빌드하세요."
+        println "=========================================="
+        println ""
+        
+        // 기본 설정 완료 (경로 검증 생략)
+    } else {
+        throw new GradleException(
+            "\n❌ local.properties와 local.properties.template 모두 없습니다!\n" +
+            "Git에서 최신 코드를 받아주세요: git pull origin front\n"
+        )
+    }
+}
+
+// ============================================
+
+include ':app', ':OpenCV'

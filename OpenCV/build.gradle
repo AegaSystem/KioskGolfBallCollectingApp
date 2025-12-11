@@ -1,0 +1,82 @@
+apply plugin: 'com.android.library'
+
+def openCVersionName = "4.5.5"
+def openCVersionCode = ((4 * 100 + 5) * 100 + 5) * 10 + 0
+
+println "OpenCV: " + openCVersionName + " " + project.buildscript.sourceFile
+
+android {
+    namespace 'org.opencv'
+    compileSdkVersion 33
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 33
+
+        versionCode openCVersionCode
+        versionName openCVersionName
+
+        externalNativeBuild {
+            cmake {
+                arguments "-DANDROID_STL=c++_shared"
+                targets "opencv_jni_shared"
+            }
+        }
+
+        // 태블릿 전용: ARM32 전용
+        ndk {
+            abiFilters 'armeabi-v7a'
+        }
+    }
+
+    buildTypes {
+        debug {
+            packagingOptions {
+                doNotStrip '**/*.so'  // controlled by OpenCV CMake scripts
+            }
+            jniDebuggable true
+        }
+        release {
+            packagingOptions {
+                doNotStrip '**/*.so'  // controlled by OpenCV CMake scripts
+            }
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['native/libs']
+            java.srcDirs = ['java/src']
+            aidl.srcDirs = ['src/main/aidl']
+            res.srcDirs = ['java/res']
+            manifest.srcFile 'java/AndroidManifest.xml'
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path (project.projectDir.toString() + '/libcxx_helper/CMakeLists.txt')
+        }
+    }
+}
+
+// ============================================
+// Java Toolchain 설정 (컴파일러 JDK 고정)
+// ============================================
+// 소스코드 컴파일 시 Java 17 컴파일러를 사용하도록 고정
+// IDE의 Gradle JDK 설정과 무관하게 동일한 컴파일러 사용
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+dependencies {
+    // OpenCV는 다른 의존성 없음
+}

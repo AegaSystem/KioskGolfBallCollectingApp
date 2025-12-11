@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- 수평 레이아웃: SurfaceView(왼쪽) + 카메라 이동 버튼 strip(오른쪽) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <!-- SurfaceView + 좌하단 스냅샷 버튼 + 우하단 PlayId 버튼(overlay) -->
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <SurfaceView
+                android:id="@+id/surfaceView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <!-- 좌하단 overlay: 스냅샷 버튼 -->
+            <Button
+                android:id="@+id/btnSnapshot"
+                android:layout_width="160dp"
+                android:layout_height="60dp"
+                android:layout_gravity="end|bottom"
+                android:layout_margin="24dp"
+                android:text="스냅샷"
+                android:textSize="18sp"
+                android:backgroundTint="#4CAF50"
+                android:textColor="#FFFFFF"
+                android:enabled="false" />
+
+            <!-- 우하단 overlay: PlayId 버튼 -->
+            <LinearLayout
+                android:id="@+id/rightBottomPanel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_gravity="end|bottom"
+                android:layout_margin="24dp"
+                android:visibility="gone">
+
+                <Button
+                    android:id="@+id/btnPlayWhite"
+                    android:layout_width="160dp"
+                    android:layout_height="60dp"
+                    android:text="PlayId(WHITE)"
+                    android:padding="0dp"
+                    android:textSize="18sp"
+                    android:backgroundTint="#FFFFFF"
+                    android:textColor="#000000"
+                    android:layout_marginBottom="20dp" />
+
+                <Button
+                    android:id="@+id/btnPlayColor"
+                    android:layout_width="160dp"
+                    android:layout_height="60dp"
+                    android:padding="0dp"
+                    android:text="PlayId(COLOR)"
+                    android:textSize="18sp"
+                    android:backgroundTint="#FF6B6B"
+                    android:textColor="#FFFFFF" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <!-- 우측: 2열 9행 카메라 이동 버튼 strip (세로 전체 채움) -->
+        <GridLayout
+            android:id="@+id/holeButtonPanel"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:columnCount="2"
+            android:rowCount="9"
+            android:alignmentMode="alignMargins"
+            android:rowOrderPreserved="false"
+            android:useDefaultMargins="true"
+            android:background="#CC000000"
+            android:padding="8dp">
+
+            <!-- 1~9홀 White/Lady 버튼 -->
+            <Button android:id="@+id/btn1HoleWhite" android:layout_width="80dp" android:layout_height="0dp" android:layout_rowWeight="1" android:text="1W" android:textSize="14sp" />
+            <Button android:id="@+id/btn1HoleLady"  android:layout_width="80dp" android:layout_height="0dp" android:layout_rowWeight="1" android:text="1L" android:textSize="14sp" />
+            <Button android:id="@+id/btn2HoleWhite" android:layout_width="80dp" android:layout_height="0dp" android:layout_rowWeight="1" android:text="2W" android:textSize="14sp" />
+            <Button android:id="@+id/btn2HoleLady"  android:layout_width="80dp" android:layout_height="0dp" android:layout_rowWeight="1" android:text="2L" android:textSize="14sp" />
+            <Button android:id="@+id/btn3HoleWhite" android:layout_width="80dp" android:layout_height="0dp" android:layout_rowWeight="1" android:text="3W" android:textSize="14sp" />
+            <Button android:id="@+id/btn3HoleLady"  android:layout_width="80dp" android:layout_height="0dp" android:layout_rowWeight="1" android:text="3L" android:textSize="14sp" />
+            <Button android:id="@+id/btn4HoleWhite" android:layout_width="80dp" android:layout_height="0dp" android:layout_rowWeight="1" android:text="4W" android:textSize="14sp" />
+            <Button android:id="@+id/btn4HoleLady"  android:layout_width="80dp" android:layout_height="0dp" android:layout_rowWeight="1" android:text="4L" android:textSize="14sp" />
+            <Button android:id="@+id/btn5HoleWhite" android:layout_width="80dp" android:layout_height="0dp" android:layout_rowWeight="1" android:text="5W" android:textSize="14sp" />
+            <Button android:id="@+id/btn5HoleLady"  android:layout_width="80dp" android:layout_height="0dp" android:layout_rowWeight="1" android:text="5L" android:textSize="14sp" />
+            <Button android:id="@+id/btn6HoleWhite" android:layout_width="80dp" android:layout_height="0dp" android:layout_rowWeight="1" android:text="6W" android:textSize="14sp" />
+            <Button android:id="@+id/btn6HoleLady"  android:layout_width="80dp" android:layout_height="0dp" android:layout_rowWeight="1" android:text="6L" android:textSize="14sp" />
+            <Button android:id="@+id/btn7HoleWhite" android:layout_width="80dp" android:layout_height="0dp" android:layout_rowWeight="1" android:text="7W" android:textSize="14sp" />
+            <Button android:id="@+id/btn7HoleLady"  android:layout_width="80dp" android:layout_height="0dp" android:layout_rowWeight="1" android:text="7L" android:textSize="14sp" />
+            <Button android:id="@+id/btn8HoleWhite" android:layout_width="80dp" android:layout_height="0dp" android:layout_rowWeight="1" android:text="8W" android:textSize="14sp" />
+            <Button android:id="@+id/btn8HoleLady"  android:layout_width="80dp" android:layout_height="0dp" android:layout_rowWeight="1" android:text="8L" android:textSize="14sp" />
+            <Button android:id="@+id/btn9HoleWhite" android:layout_width="80dp" android:layout_height="0dp" android:layout_rowWeight="1" android:text="9W" android:textSize="14sp" />
+            <Button android:id="@+id/btn9HoleLady"  android:layout_width="80dp" android:layout_height="0dp" android:layout_rowWeight="1" android:text="9L" android:textSize="14sp" />
+        </GridLayout>
+    </LinearLayout>
+
+</FrameLayout>

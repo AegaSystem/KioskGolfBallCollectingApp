@@ -1,0 +1,65 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        google()         // Google Maven Repository 추가
+        mavenCentral()   // Maven Central 추가
+        // Windows 경로 제거 (macOS 환경에서 사용 불가)
+        // maven {
+        //     url "D:\\tools\\GradleBuild\\gradle\\m2repository\\m2repository"
+        // }
+        maven {
+            url "http://rdmaven.dahuatech.com:8081/nexus/content/repositories/dss-releases/"
+            allowInsecureProtocol = true
+        }
+        maven {
+            url "http://rdmaven.dahuatech.com:8081/nexus/content/repositories/dss-snapshots/"
+            allowInsecureProtocol = true
+        }
+        maven {
+            url "http://rdmaven.dahuatech.com:9091/repository/aliyun-google/"
+            allowInsecureProtocol = true
+        }
+        maven {
+            url "http://rdmaven.dahuatech.com:8081/nexus/content/groups/AndroidGroup/"
+            allowInsecureProtocol = true
+        }
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.1.1'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        mavenLocal()
+        google()         // Google Maven Repository 추가
+        mavenCentral()   // Maven Central 추가
+        // Windows 경로 제거 (macOS 환경에서 사용 불가)
+        // maven {
+        //     url "D:\\tools\\GradleBuild\\gradle\\m2repository\\m2repository"
+        // }
+        maven {
+            url "http://rdmaven.dahuatech.com:8081/nexus/content/repositories/dss-releases/"
+            allowInsecureProtocol = true
+        }
+        maven {
+            url "http://rdmaven.dahuatech.com:8081/nexus/content/repositories/dss-snapshots/"
+            allowInsecureProtocol = true
+        }
+        maven {
+            url "http://rdmaven.dahuatech.com:9091/repository/aliyun-google/"
+            allowInsecureProtocol = true
+        }
+        maven {
+            url "http://rdmaven.dahuatech.com:8081/nexus/content/groups/AndroidGroup/"
+            allowInsecureProtocol = true
+        }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
