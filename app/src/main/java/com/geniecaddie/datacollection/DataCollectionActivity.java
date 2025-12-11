@@ -277,8 +277,18 @@ public class DataCollectionActivity extends Activity implements SurfaceHolder.Ca
                         if (success) {
                             captureCount++;
                             String fileName = new File(filePath).getName();
+                            String message = String.format(
+                                getString(R.string.toast_snapshot_success),
+                                fileName
+                            );
+                            Toast.makeText(DataCollectionActivity.this, message, Toast.LENGTH_SHORT).show();
                             Timber.tag(TAG).i("캡처 성공 (총 %d개) - %s", captureCount, fileName);
                         } else {
+                            Toast.makeText(
+                                DataCollectionActivity.this,
+                                R.string.toast_snapshot_failed,
+                                Toast.LENGTH_SHORT
+                            ).show();
                             Timber.tag(TAG).w("캡처 실패");
                         }
 

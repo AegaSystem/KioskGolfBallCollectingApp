@@ -78,10 +78,6 @@ lint/tmp/
 # 프로젝트별 ignore
 # ================================
 
-# Keystore files (보안)
-*.jks
-geniecaddie-debug.jks
-
 # docs 폴더 제외 (문서는 GitHub에 올리지 않음)
 docs/
 
