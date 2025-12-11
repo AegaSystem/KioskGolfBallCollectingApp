@@ -10,7 +10,11 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import com.geniecaddie.KioskGolfBallCollectingApp.R;
 
@@ -81,6 +85,12 @@ public class DataCollectionActivity extends Activity implements SurfaceHolder.Ca
     private boolean isSurfaceReady = false;
     private int captureCount = 0;
 
+    // 일별 홀별 수집 개수 (날짜 -> 홀정보 -> 개수)
+    private Map<String, Map<String, Integer>> dailyHoleCounts = new HashMap<>();
+
+    // UI 표시용 TextView
+    private TextView dailyStatsTextView;
+
     /**
      * NetSDK 초기화 상태 확인
      */
@@ -146,6 +156,9 @@ public class DataCollectionActivity extends Activity implements SurfaceHolder.Ca
 
             // View 초기화
             initViews();
+
+            // 일별 수집 통계 초기화
+            initDailyStats();
 
         // NetSDK 초기화 상태 확인
         checkNetSDKStatus();
@@ -283,6 +296,12 @@ public class DataCollectionActivity extends Activity implements SurfaceHolder.Ca
                             );
                             Toast.makeText(DataCollectionActivity.this, message, Toast.LENGTH_SHORT).show();
                             Timber.tag(TAG).i("캡처 성공 (총 %d개) - %s", captureCount, fileName);
+
+                            // 홀별 카운트 업데이트
+                            String holeInfo = extractHoleInfoFromFileName(fileName);
+                            if (holeInfo != null) {
+                                updateHoleCountOnSnapshot(holeInfo);
+                            }
                         } else {
                             Toast.makeText(
                                 DataCollectionActivity.this,
@@ -360,6 +379,147 @@ public class DataCollectionActivity extends Activity implements SurfaceHolder.Ca
         }
 
         return "unknown";
+    }
+
+    /**
+     * 일별 수집 통계 초기화
+     */
+    private void initDailyStats() {
+        // UI 요소 초기화
+        dailyStatsTextView = findViewById(R.id.dailyStatsTextView);
+        if (dailyStatsTextView == null) {
+            Timber.tag(TAG).w("dailyStatsTextView를 찾을 수 없음 - UI에 추가 필요");
+            return;
+        }
+
+        // 파일 시스템 스캔으로 기존 데이터 로드
+        scanDailyHoleCounts();
+
+        // UI 업데이트
+        updateDailyStatsUI();
+    }
+
+    /**
+     * 파일 시스템에서 오늘 날짜의 홀별 수집 개수 스캔
+     */
+    private void scanDailyHoleCounts() {
+        File golfBallDir = new File(Environment.getExternalStoragePublicDirectory(
+            Environment.DIRECTORY_DOWNLOADS), "GolfBallImages");
+
+        if (!golfBallDir.exists()) {
+            Timber.tag(TAG).d("GolfBallImages 폴더가 존재하지 않음");
+            return;
+        }
+
+        // 오늘 날짜 구하기
+        String today = new SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(new Date());
+        File todayDir = new File(golfBallDir, today);
+
+        if (!todayDir.exists()) {
+            Timber.tag(TAG).d("오늘 날짜 폴더가 존재하지 않음: %s", today);
+            return;
+        }
+
+        // 오늘 폴더에서 파일들 스캔
+        File[] todayFiles = todayDir.listFiles(file ->
+            file.isFile() && file.getName().toLowerCase().endsWith(".jpg"));
+
+        if (todayFiles == null || todayFiles.length == 0) {
+            Timber.tag(TAG).d("오늘 날짜에 파일이 없음");
+            return;
+        }
+
+        // 홀별 카운트 초기화
+        Map<String, Integer> holeCounts = new HashMap<>();
+        for (int i = 1; i <= 9; i++) {
+            holeCounts.put(i + "W", 0);
+            holeCounts.put(i + "L", 0);
+        }
+
+        // 파일별로 카운트
+        for (File file : todayFiles) {
+            String fileName = file.getName();
+            String holeInfo = extractHoleInfoFromFileName(fileName);
+            if (holeInfo != null && holeCounts.containsKey(holeInfo)) {
+                holeCounts.put(holeInfo, holeCounts.get(holeInfo) + 1);
+            }
+        }
+
+        dailyHoleCounts.put(today, holeCounts);
+        Timber.tag(TAG).i("일별 수집 개수 스캔 완료: %d개 파일, %d개 홀 정보",
+            todayFiles.length, holeCounts.size());
+    }
+
+    /**
+     * 파일명에서 홀 정보 추출 (HHmmss_홀정보.jpg -> 홀정보)
+     */
+    private String extractHoleInfoFromFileName(String fileName) {
+        try {
+            // "143022_5W.jpg" -> "5W"
+            String nameWithoutExt = fileName.substring(0, fileName.lastIndexOf('.'));
+            String[] parts = nameWithoutExt.split("_");
+            if (parts.length >= 2) {
+                return parts[1]; // 두 번째 부분이 홀 정보
+            }
+        } catch (Exception e) {
+            Timber.tag(TAG).w("파일명에서 홀 정보 추출 실패: %s", fileName);
+        }
+        return null;
+    }
+
+    /**
+     * 스냅샷 성공 시 홀 카운트 업데이트
+     */
+    private void updateHoleCountOnSnapshot(String holeInfo) {
+        String today = new SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(new Date());
+
+        // 오늘 날짜 맵 가져오기 (없으면 생성)
+        Map<String, Integer> holeCounts = dailyHoleCounts.computeIfAbsent(today, k -> {
+            Map<String, Integer> counts = new HashMap<>();
+            for (int i = 1; i <= 9; i++) {
+                counts.put(i + "W", 0);
+                counts.put(i + "L", 0);
+            }
+            return counts;
+        });
+
+        // 해당 홀 카운트 증가
+        if (holeCounts.containsKey(holeInfo)) {
+            holeCounts.put(holeInfo, holeCounts.get(holeInfo) + 1);
+            Timber.tag(TAG).d("홀 카운트 업데이트: %s = %d", holeInfo, holeCounts.get(holeInfo));
+
+            // UI 업데이트
+            updateDailyStatsUI();
+        }
+    }
+
+    /**
+     * 일별 수집 통계 UI 업데이트
+     */
+    private void updateDailyStatsUI() {
+        if (dailyStatsTextView == null) return;
+
+        String today = new SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(new Date());
+        Map<String, Integer> holeCounts = dailyHoleCounts.get(today);
+
+        if (holeCounts == null || holeCounts.isEmpty()) {
+            dailyStatsTextView.setText("수집 데이터 없음");
+            return;
+        }
+
+        // 홀별 통계 텍스트 생성
+        StringBuilder statsText = new StringBuilder();
+        for (int i = 1; i <= 9; i++) {
+            String whiteKey = i + "W";
+            String ladyKey = i + "L";
+            int whiteCount = holeCounts.getOrDefault(whiteKey, 0);
+            int ladyCount = holeCounts.getOrDefault(ladyKey, 0);
+
+            if (statsText.length() > 0) statsText.append("\n");
+            statsText.append(String.format("%dW:%d %dL:%d", i, whiteCount, i, ladyCount));
+        }
+
+        dailyStatsTextView.setText(statsText.toString());
     }
 
     /**

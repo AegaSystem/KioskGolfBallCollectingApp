@@ -24,6 +24,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
+            <!-- 좌상단 overlay: 일별 수집 통계 -->
+            <TextView
+                android:id="@+id/dailyStatsTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|top"
+                android:layout_margin="16dp"
+                android:background="#80000000"
+                android:padding="8dp"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"
+                android:text="수집 데이터 로딩중..." />
+
             <!-- 좌하단 overlay: 스냅샷 버튼 -->
             <Button
                 android:id="@+id/btnSnapshot"
