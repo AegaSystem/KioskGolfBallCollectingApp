@@ -457,11 +457,11 @@ public class DataCollectionActivity extends Activity implements SurfaceHolder.Ca
      */
     private String extractHoleInfoFromFileName(String fileName) {
         try {
-            // "143022_5W.jpg" -> "5W"
+            // "20250111_143022_5W.jpg" -> "5W"
             String nameWithoutExt = fileName.substring(0, fileName.lastIndexOf('.'));
             String[] parts = nameWithoutExt.split("_");
-            if (parts.length >= 2) {
-                return parts[1]; // 두 번째 부분이 홀 정보
+            if (parts.length >= 3) {
+                return parts[2]; // 세 번째 부분이 홀 정보 (날짜_시간_홀정보)
             }
         } catch (Exception e) {
             Timber.tag(TAG).w("파일명에서 홀 정보 추출 실패: %s", fileName);
