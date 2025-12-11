@@ -500,23 +500,37 @@ public class DataCollectionActivity extends Activity implements SurfaceHolder.Ca
         if (dailyStatsTextView == null) return;
 
         String today = new SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(new Date());
+        String displayDate = new SimpleDateFormat("yyyy.MM.dd", Locale.getDefault()).format(new Date());
         Map<String, Integer> holeCounts = dailyHoleCounts.get(today);
 
+        // 날짜 표시
+        StringBuilder statsText = new StringBuilder();
+        statsText.append(displayDate).append("\n");
+
         if (holeCounts == null || holeCounts.isEmpty()) {
-            dailyStatsTextView.setText("수집 데이터 없음");
+            statsText.append("수집 데이터 없음");
+            dailyStatsTextView.setText(statsText.toString());
             return;
         }
 
         // 홀별 통계 텍스트 생성
-        StringBuilder statsText = new StringBuilder();
+        boolean hasData = false;
         for (int i = 1; i <= 9; i++) {
             String whiteKey = i + "W";
             String ladyKey = i + "L";
             int whiteCount = holeCounts.getOrDefault(whiteKey, 0);
             int ladyCount = holeCounts.getOrDefault(ladyKey, 0);
 
-            if (statsText.length() > 0) statsText.append("\n");
-            statsText.append(String.format("%dW:%d %dL:%d", i, whiteCount, i, ladyCount));
+            // 데이터가 있는 홀만 표시
+            if (whiteCount > 0 || ladyCount > 0) {
+                if (hasData) statsText.append("\n");
+                statsText.append(String.format("%dW:%d %dL:%d", i, whiteCount, i, ladyCount));
+                hasData = true;
+            }
+        }
+
+        if (!hasData) {
+            statsText.append("수집 데이터 없음");
         }
 
         dailyStatsTextView.setText(statsText.toString());
